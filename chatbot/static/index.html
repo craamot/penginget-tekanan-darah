@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pengingat Tekanan Darah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#4f5bd5">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%234f5bd5'/%3E%3Cpath d='M32 50S12 38 12 24a10 10 0 0 1 20-3 10 10 0 0 1 20 3c0 14-20 26-20 26z' fill='%23ffffff'/%3E%3Cpath d='M14 31h10l4-8 6 14 4-6h12' fill='none' stroke='%234f5bd5' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#f3f5ff;--panel:#ffffff;--ink:#1c2146;--mute:#666c94;--line:#dde2f5;--accent:#4f5bd5;--accent2:#7c89ec;--ok:#2f7d5b;--warn:#b7791f;--bad:#b3392f;--field:#edf0fd;--hero1:#6270e0;--hero2:#3f4bb8;--btn1:#6573e3;--btn2:#4a56cf;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1330;--panel:#172046;--ink:#eef1ff;--mute:#9aa3ce;--line:#2a3568;--accent:#a5b0ff;--accent2:#c3cbff;--ok:#5fc59a;--warn:#e3b04b;--bad:#ee7b70;--field:#111838;--hero1:#4a56cf;--hero2:#1e2766;--btn1:#6573e3;--btn2:#4a56cf}}
+:root[data-theme="dark"]{--bg:#0e1330;--panel:#172046;--ink:#eef1ff;--mute:#9aa3ce;--line:#2a3568;--accent:#a5b0ff;--accent2:#c3cbff;--ok:#5fc59a;--warn:#e3b04b;--bad:#ee7b70;--field:#111838;--hero1:#4a56cf;--hero2:#1e2766;--btn1:#6573e3;--btn2:#4a56cf}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding:28px 20px 100px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+.brand{font-family:"Cormorant Garamond",Georgia,serif;font-size:28px;font-weight:600;letter-spacing:.02em}
+.brand i{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--accent2);margin-left:6px}
+button{font:inherit;cursor:pointer}
+.ghost{background:none;border:1px solid var(--line);color:var(--mute);border-radius:99px;padding:6px 14px;font-size:13px}
+.ghost:hover{color:var(--ink);border-color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
+[hidden]{display:none!important}
+.hero{display:grid;grid-template-columns:1.5fr 1fr;gap:20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:28px}
+.hero .main{background:linear-gradient(150deg,var(--hero1),var(--hero2));color:#fff;border-color:transparent;position:relative;overflow:hidden}
+.hero .main::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.3);box-shadow:0 0 0 28px rgba(255,255,255,.06),0 0 0 56px rgba(255,255,255,.04)}
+/* Kartu saat belum ada catatan: tema black hole */
+.hero .main.void{
+  background:
+    radial-gradient(1.2px 1.2px at 12% 24%,rgba(255,255,255,.8),transparent 60%),
+    radial-gradient(1px 1px at 31% 78%,rgba(255,255,255,.55),transparent 60%),
+    radial-gradient(1.4px 1.4px at 47% 18%,rgba(255,255,255,.7),transparent 60%),
+    radial-gradient(1px 1px at 58% 66%,rgba(255,255,255,.5),transparent 60%),
+    radial-gradient(1.2px 1.2px at 22% 52%,rgba(255,255,255,.45),transparent 60%),
+    radial-gradient(1px 1px at 69% 88%,rgba(255,255,255,.6),transparent 60%),
+    radial-gradient(120% 120% at 85% 5%,#0b0a22 0%,#04040c 55%,#000 100%);
+  border-color:#a05004;
+}
+.hero .main.void::after{
+  background:#000;
+  border:2px solid rgba(255,170,70,.95);
+  box-shadow:0 0 0 10px rgba(255,120,20,.25),0 0 0 26px rgba(255,120,20,.1),0 0 70px 22px rgba(255,110,10,.45);
+}
+.hero .main.void .reading{color:rgba(255,255,255,.88)}
+.lbl{font-size:13px;color:var(--mute)}
+.main .lbl{color:rgba(255,255,255,.78)}
+.reading{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(64px,13vw,112px);line-height:1;font-weight:500;margin:10px 0 4px;color:#fff;position:relative;z-index:1}
+.reading small{font-size:.3em;color:rgba(255,255,255,.78);margin-left:8px;font-family:Manrope,sans-serif}
+.badge{display:inline-block;padding:4px 12px;border-radius:99px;font-size:13px;font-weight:600;border:1px solid currentColor;position:relative;z-index:1}
+.next{display:flex;flex-direction:column;justify-content:space-between}
+.count{font-family:"Cormorant Garamond",Georgia,serif;font-size:64px;line-height:1;color:var(--accent);margin:8px 0}
+.count span{font-size:20px;color:var(--mute);margin-left:6px;font-family:Manrope,sans-serif}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}
+h2{font-family:"Cormorant Garamond",Georgia,serif;font-size:24px;font-weight:600;margin:0 0 16px}
+form{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+label{font-size:13px;color:var(--mute);display:block;margin-bottom:4px}
+input{width:100%;font:inherit;font-size:18px;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--field);color:var(--ink)}
+input:focus{outline:none;border-color:var(--accent2)}
+.full{grid-column:1/-1}
+.pri{background:linear-gradient(135deg,var(--btn1),var(--btn2));color:#fff;border:0;border-radius:12px;padding:13px;font-weight:600;font-size:15px}
+.pri:hover{filter:brightness(1.06)}
+.set{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.stats b{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-size:28px;font-weight:600}
+.chartbox{overflow-x:auto}
+svg text{font-family:Manrope,sans-serif;font-size:11px;fill:var(--mute)}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:grid;grid-template-columns:90px 1fr auto auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.list li:last-child{border:0}
+.list .v{font-family:"Cormorant Garamond",Georgia,serif;font-size:24px;font-weight:600}
+.x{background:none;border:0;color:var(--mute);font-size:18px}
+.x:hover{color:var(--bad)}
+.empty{color:var(--mute);padding:8px 0}
+.note{font-size:12px;color:var(--mute);margin-top:28px;text-align:center}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}
+.main .ok{color:#9bf0c8}.main .warn{color:#ffe08a}.main .bad{color:#ffb4ab}
+.rs{margin-top:14px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);font-size:14px;display:flex;gap:8px;align-items:center}
+.rs.due{border-color:var(--warn);background:rgba(227,176,75,.1)}
+.rs.done{border-color:var(--ok);background:rgba(95,197,154,.1)}
+.rs.off{color:var(--mute)}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--field);margin-top:14px}
+.sw input{width:44px;height:24px;accent-color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{font-size:13px;padding:5px 12px;border-radius:99px;border:1px solid var(--line);color:var(--ink)}
+.chip:first-child{border-color:var(--accent2);color:var(--accent)}
+.st{font-size:13px;font-weight:600}
+/* popup alarm */
+.ov{position:fixed;inset:0;z-index:50;background:rgba(10,12,24,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px}
+.ov[hidden]{display:none}
+.dlg{position:relative;width:100%;max-width:440px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:24px;text-align:center;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.35);animation:pop .25s ease-out}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+.dlg .top{padding:28px 24px 20px}
+.dlg .cl{position:absolute;right:14px;top:12px;background:none;border:0;color:var(--ink);font-size:26px;line-height:1;padding:4px 8px}
+.dlg .ic{width:76px;height:76px;margin:0 auto 14px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center;animation:ring 1s ease-in-out infinite}
+@keyframes ring{0%,100%{transform:rotate(0)}15%{transform:rotate(-12deg)}30%{transform:rotate(10deg)}45%{transform:rotate(-6deg)}60%{transform:rotate(0)}}
+.dlg h3{font-family:"Cormorant Garamond",Georgia,serif;font-size:32px;line-height:1.15;margin:0 0 6px;font-weight:600}
+.dlg .tm{color:var(--mute);margin:0 0 16px}.dlg .tm b{color:var(--ink)}
+.dlg .bx{background:var(--field);border-radius:16px;padding:16px;font-size:15px}
+.dlg .bx b{display:block;font-size:19px;margin-bottom:2px}
+.dlg .bt{padding:16px 24px 24px;border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dlg .bt .pri{grid-column:1/-1;background:var(--ok);color:#fff;font-size:17px;padding:15px}
+.dlg .bt .ghost{border-radius:12px;padding:11px;color:var(--ink)}
+.dlg .rem{grid-column:1/-1;text-align:left;margin-top:4px;padding-top:12px;border-top:1px dashed var(--line)}
+.dlg .rem label{margin-bottom:6px}
+.dlg .rr{display:flex;gap:10px}
+.dlg .rr input{font-size:17px;padding:9px 12px}
+.dlg .rr .pri{white-space:nowrap;padding:9px 16px;font-size:15px}
+@media(max-width:760px){.hero,.row{grid-template-columns:1fr}.list li{grid-template-columns:70px 1fr auto auto;font-size:14px}}
+
+/* ===== Chatbot (panel mengambang) ===== */
+.fab{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--btn1),var(--btn2));color:#fff;border:0;border-radius:99px;padding:13px 20px;font-weight:600;font-size:15px;
+  box-shadow:0 10px 28px rgba(0,0,0,.28)}
+.fab:hover{filter:brightness(1.06)}
+.chat{position:fixed;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:45;width:min(410px,calc(100vw - 24px));
+  height:min(600px,calc(100dvh - 40px - env(safe-area-inset-bottom,0px)));display:flex;flex-direction:column;overflow:hidden;
+  background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.chat[hidden]{display:none}
+.chead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 12px;border-bottom:1px solid var(--line)}
+.chead b{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-size:22px;font-weight:600;line-height:1.2}
+.chead .lbl{display:block}
+.cclose{background:none;border:0;color:var(--mute);font-size:26px;line-height:1;padding:2px 8px}
+.cclose:hover{color:var(--ink)}
+.cmsgs{flex:1;overflow-y:auto;padding:16px}
+.cempty p{margin:0 0 12px;color:var(--mute);font-size:14.5px}
+.cchips{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.cchip{background:var(--field);border:1px solid var(--line);border-radius:14px;padding:8px 13px;font-size:14px;text-align:left;color:var(--ink)}
+.cchip:hover{border-color:var(--accent2)}
+.cm{margin:0 0 16px;display:flex}
+.cm.user{justify-content:flex-end}
+.cm.user .cb{background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:18px 18px 5px 18px;max-width:86%;white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px}
+.cm.bot .cb{min-width:0;width:100%;font-size:15px}
+.cprose>:first-child{margin-top:0}.cprose>:last-child{margin-bottom:0}
+.cprose p,.cprose ul,.cprose ol,.cprose blockquote,.cprose table{margin:0 0 10px}
+.cprose ul,.cprose ol{padding-left:20px}.cprose li{margin:3px 0}
+.cprose h1,.cprose h2,.cprose h3{font-family:Manrope,sans-serif;font-size:1em;margin:14px 0 6px;font-weight:700}
+.cprose a{color:var(--accent)}
+.cprose blockquote{padding-left:12px;border-left:3px solid var(--line);color:var(--mute)}
+.cprose table{display:block;overflow-x:auto;border-collapse:collapse;font-size:13.5px}
+.cprose th,.cprose td{border:1px solid var(--line);padding:5px 9px;text-align:left}
+.cprose code{background:var(--field);padding:.1em .35em;border-radius:5px;font-size:.9em}
+.ctyping{display:inline-flex;gap:5px;padding:8px 0}
+.ctyping i{width:7px;height:7px;border-radius:50%;background:var(--mute);opacity:.5;animation:cblink 1.2s infinite ease-in-out}
+.ctyping i:nth-child(2){animation-delay:.15s}.ctyping i:nth-child(3){animation-delay:.3s}
+@keyframes cblink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.ctyping i{animation:none;opacity:.6}.dlg .ic,.dlg{animation:none}}
+.cerr{border-left:3px solid var(--bad);padding:2px 0 2px 12px;font-size:14px}
+.cerr p{margin:0 0 6px;color:var(--bad)}
+.cerr button{background:none;border:1px solid var(--line);border-radius:99px;padding:3px 12px;font-size:13px;color:var(--ink)}
+.cerr button:hover{border-color:var(--accent2)}
+.cfoot{border-top:1px solid var(--line);padding:10px 14px 14px}
+.cshare{display:flex;align-items:flex-start;gap:8px;margin:0 0 10px;font-size:12.5px;color:var(--mute);line-height:1.4}
+.cshare input{width:16px;height:16px;margin-top:2px;flex:none;accent-color:var(--accent);padding:0}
+.cbox{display:flex;align-items:flex-end;gap:8px;background:var(--field);border:1px solid var(--line);border-radius:20px;padding:5px 5px 5px 14px}
+.cbox:focus-within{border-color:var(--accent2)}
+.cbox textarea{flex:1;border:0;outline:0;resize:none;background:transparent;color:var(--ink);font:inherit;font-size:15px;line-height:1.45;max-height:130px;padding:7px 0}
+.cbox textarea::placeholder{color:var(--mute)}
+.csend{width:38px;height:38px;flex:none;border:0;border-radius:50%;background:linear-gradient(135deg,var(--btn1),var(--btn2));color:#fff;display:grid;place-items:center}
+.csend:disabled{opacity:.35;cursor:not-allowed}
+.cnote{margin:8px 0 0;text-align:center;font-size:11.5px;color:var(--mute)}
+@media(max-width:520px){.chat{right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));height:min(640px,calc(100dvh - 24px - env(safe-area-inset-bottom,0px)))}.fab{right:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand">Penginget Tekanan Darah<i></i></div>
+  <button class="ghost" id="theme" type="button">Ganti tema</button>
+</header>
+
+<section class="hero">
+  <div class="card main">
+    <div class="lbl" id="lastLbl">Pengukuran terakhir</div>
+    <div class="reading" id="reading">—<small>mmHg</small></div>
+    <span class="badge" id="badge" hidden></span>
+  </div>
+  <div class="card next">
+    <div>
+      <div class="lbl">Pengecekan berikutnya</div>
+      <div class="count" id="count">—</div>
+      <div class="lbl" id="nextDate"></div>
+      <div class="st" id="stat" style="margin-top:8px"></div>
+    </div>
+    <div class="stats" style="grid-template-columns:1fr 1fr">
+      <div><span class="lbl">Rata-rata 7 hari</span><b id="avg">—</b></div>
+      <div><span class="lbl">Total catatan</span><b id="total">0</b></div>
+    </div>
+  </div>
+</section>
+
+<section class="row">
+  <div class="card">
+    <h2>Catat hasil tensi</h2>
+    <form id="form">
+      <div><label for="sys">Sistolik</label><input id="sys" type="number" inputmode="numeric" min="60" max="260" placeholder="120" required></div>
+      <div><label for="dia">Diastolik</label><input id="dia" type="number" inputmode="numeric" min="30" max="160" placeholder="80" required></div>
+      <div><label for="pul">Denyut</label><input id="pul" type="number" inputmode="numeric" min="30" max="220" placeholder="72"></div>
+      <button class="pri full" type="submit">Simpan catatan</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2>Jadwal pengingat</h2>
+    <div class="set">
+      <div><label for="start">Mulai tanggal</label><input id="start" type="date"></div>
+      <div><label for="every">Setiap (hari)</label><input id="every" type="number" min="1" max="30" value="3"></div>
+    </div>
+    <label class="sw" for="on"><span><b>Pengingat aktif</b><br><span class="lbl">Matikan jika sedang tidak ingin diingatkan</span></span><input id="on" type="checkbox" checked></label>
+    <div class="lbl" style="margin-top:14px">5 jadwal berikutnya</div>
+    <div class="chips" id="chips"></div>
+    <div class="rs off" id="rs"></div>
+    <div class="set" style="margin-top:14px">
+      <div><label for="atime">Jam alarm</label><input id="atime" type="time" value="08:00"></div>
+      <div><label>Status hari ini</label><div class="badge" id="today" style="margin-top:8px">—</div></div>
+    </div>
+    <div style="margin-top:14px"><label for="sfile">Suara alarm</label>
+      <div class="lbl" id="sname" style="margin-bottom:8px">Suara bawaan</div>
+      <input id="sfile" type="file" accept="audio/*" style="font-size:14px;padding:9px 10px">
+      <button class="ghost" id="sreset" type="button" style="margin-top:8px;width:100%;border-radius:12px;padding:9px">Pakai suara bawaan</button>
+      <div class="lbl" style="margin-top:6px">Pilih file suara (mp3, m4a, wav) dari HP atau komputer. Suara diulang terus sampai alarm dimatikan.</div></div>
+    <button class="pri" id="alarmBtn" type="button" style="margin-top:14px;width:100%">Aktifkan alarm di halaman</button>
+    <div class="rs" id="astat" style="margin-top:10px"></div>
+    <button class="ghost" id="icsBtn" type="button" style="margin-top:10px;width:100%;border-radius:12px;padding:11px">Pasang alarm ke HP (kalender)</button>
+    <button class="ghost" id="testBtn" type="button" style="margin-top:10px;width:100%;border-radius:12px;padding:11px">Tes bunyi alarm</button>
+  </div>
+</section>
+
+<section class="card" style="margin-top:20px">
+  <h2> Statistik tekanan darah</h2>
+  <div class="chartbox" id="chart"></div>
+</section>
+
+<section class="card" style="margin-top:20px">
+  <h2>Riwayat</h2>
+  <ul class="list" id="list"></ul>
+</section>
+</div>
+
+<!-- Popup alarm -->
+<div class="ov" id="ov" hidden>
+  <div class="dlg" role="alertdialog" aria-modal="true" aria-labelledby="dt">
+    <div class="top">
+      <div class="ic"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg></div>
+      <h3 id="dt">Waktunya cek tensi!</h3>
+      <p class="tm">Jadwal pukul <b id="dtm">08:00</b></p>
+      <div class="bx"><b>Ukur tekanan darah Anda</b><span class="lbl">Lalu catat hasilnya di Tensi</span></div>
+    </div>
+    <div class="bt">
+      <button class="pri" id="dOk" type="button">✓ Sudah saya cek</button>
+      <button class="ghost" id="dSkip" type="button" style="grid-column:1/-1">⏭ Lewati</button>
+      <div class="rem"><label for="dTime">Atur alarm lagi, ingatkan saya jam</label><div class="rr"><input id="dTime" type="time"><button class="pri" id="dSet" type="button">Setel ulang</button></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Chatbot -->
+<button class="fab" id="fab" type="button" aria-expanded="false" aria-controls="chat">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+  Tanya asisten
+</button>
+<section class="chat" id="chat" hidden aria-label="Asisten kesehatan">
+  <div class="chead">
+    <div><b>Asisten kesehatan</b><span class="lbl">Informasi umum, bukan pengganti dokter</span></div>
+    <button class="cclose" id="cclose" type="button" aria-label="Tutup chat">×</button>
+  </div>
+  <div class="cmsgs" id="cmsgs">
+    <div class="cempty" id="cempty">
+      <p>Halo! Saya bisa membantu menjelaskan tekanan darah, cara mengukur yang benar, dan kebiasaan sehat. Pilih contoh di bawah atau tulis pertanyaanmu.</p>
+      <div class="cchips" id="cchips"></div>
+    </div>
+    <div id="cthread" aria-live="polite"></div>
+  </div>
+  <div class="cfoot">
+    <label class="cshare" for="cshare" style="margin-bottom:10px">
+      <input type="checkbox" id="cshare">
+      <span>Bagikan catatan tensi saya ke asisten agar jawabannya lebih sesuai. Data dikirim ke layanan AI hanya saat opsi ini aktif.</span>
+    </label>
+    <div class="cbox">
+      <textarea id="cin" rows="1" placeholder="Tanya soal tekanan darah…" aria-label="Pesan"></textarea>
+      <button class="csend" id="csend" type="button" aria-label="Kirim pesan" disabled></button>
+    </div>
+    <p class="cnote">Jawaban AI bisa keliru. Untuk keluhan serius, hubungi dokter atau IGD.</p>
+  </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
+<script>
+(function(){
+var KEY='tensi:data', KS='tensi:set', KT='tensi:theme';
+var data=[], set={start:'',every:3,on:true};
+function persist(){save(KEY,data);save(KS,set)}
+function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+var $=function(i){return document.getElementById(i)};
+function iso(d){var z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,10)}
+function day(s){var p=s.split('-');return new Date(+p[0],p[1]-1,+p[2])}
+function fmt(d,o){return d.toLocaleDateString('id-ID',o||{day:'numeric',month:'short',year:'numeric'})}
+function cls(s,d){
+  if(s>180||d>120)return['Krisis hipertensi','bad'];
+  if(s>=140||d>100)return['Hipertensi tahap 2','bad'];
+  if(s>130||d>90)return['Hipertensi','warn'];
+  if(s>120)return['Meningkat','warn'];
+  return['Normal','ok'];
+}
+function render(){
+  data.sort(function(a,b){return a.t-b.t});
+  var last=data[data.length-1];
+  document.querySelector('.hero .main').classList.toggle('void',!last);
+  if(last){
+    $('reading').innerHTML=last.s+'/'+last.d+'<small>mmHg</small>';
+    var c=cls(last.s,last.d),b=$('badge');b.hidden=false;b.textContent=c[0];b.className='badge '+c[1];
+    $('lastLbl').textContent='Pengukuran terakhir, '+fmt(new Date(last.t));
+  }else{$('reading').innerHTML='—<small>mmHg</small>';$('badge').hidden=true;$('lastLbl').textContent='Belum ada catatan'}
+  $('total').textContent=data.length;
+  var wk=data.filter(function(x){return Date.now()-x.t<7*864e5});
+  if(wk.length){var s=Math.round(wk.reduce(function(a,x){return a+x.s},0)/wk.length),d=Math.round(wk.reduce(function(a,x){return a+x.d},0)/wk.length);$('avg').textContent=s+'/'+d}else $('avg').textContent='—';
+  schedule();chart();list();
+}
+function schedule(){
+  var n=Math.max(1,+set.every||3),st=day(set.start||iso(new Date())),t=new Date();t.setHours(0,0,0,0);
+  var diff=Math.round((t-st)/864e5),k=diff<=0?0:Math.ceil(diff/n),nx=new Date(st.getTime());nx.setDate(st.getDate()+k*n);
+  var left=Math.round((nx-t)/864e5);
+  $('count').innerHTML=left===0?'Hari ini':left+'<span>hari lagi</span>';
+  $('nextDate').textContent=fmt(nx,{weekday:'long',day:'numeric',month:'long'});
+  var done=data.some(function(x){return iso(new Date(x.t))===iso(new Date())}),td=$('today');
+  if(left===0){td.textContent=done?'Sudah dicek ✓':'Belum dicek';td.className='badge '+(done?'ok':'warn')}
+  else{td.textContent='Belum jadwalnya';td.className='badge lbl'}
+  window.__nx=nx;window.__left=left;window.__due=(set.on!==false&&left===0&&!done&&set.skip!==iso(new Date()));
+  if(!window.__due&&!testing){snoozeUntil=0;stopRing()}astat();
+  var on=set.on!==false,stt=$('stat');
+  stt.textContent=on?'● Pengingat aktif, setiap '+n+' hari':'○ Pengingat dimatikan';
+  stt.style.color=on?'var(--ok)':'var(--mute)';
+  var h='';for(var i=0;i<5;i++){var x=new Date(nx.getTime());x.setDate(nx.getDate()+i*n);h+='<span class="chip">'+fmt(x,{weekday:'short',day:'numeric',month:'short'})+'</span>'}
+  $('chips').innerHTML=on?h:'<span class="lbl">Pengingat sedang dimatikan.</span>';
+  var rs=$('rs');
+  if(!on){rs.className='rs off';rs.textContent='Pengingat dimatikan.'}
+  else if(left===0&&!done){rs.className='rs due';rs.textContent='⏰ Hari ini jadwal cek tensi. Belum ada catatan hari ini.'}
+  else if(left===0){rs.className='rs done';rs.textContent='✅ Jadwal hari ini sudah dicatat.'}
+  else{rs.className='rs';rs.textContent='🔔 Berikutnya '+left+' hari lagi. Belum waktunya cek.'}
+}
+function chart(){
+  var el=$('chart'),pts=data.slice(-14);
+  if(!pts.length){el.innerHTML='<p class="empty">Simpan catatan pertama untuk melihat grafik.</p>';return}
+  var W=Math.max(640,pts.length*56),H=240,L=34,R=14,T=14,B=30,mn=50,mx=Math.max(170,Math.max.apply(null,pts.map(function(p){return p.s}))+10);
+  function X(i){return pts.length===1?W/2:L+i*(W-L-R)/(pts.length-1)}
+  function Y(v){return T+(mx-v)*(H-T-B)/(mx-mn)}
+  var g='';
+  for(var v=60;v<=mx;v+=30){g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--line)"/><text x="4" y="'+(Y(v)+4)+'">'+v+'</text>'}
+  g+='<rect x="'+L+'" y="'+Y(120)+'" width="'+(W-L-R)+'" height="'+(Y(80)-Y(120))+'" fill="var(--ok)" opacity=".07"/>';
+  function path(k){return pts.map(function(p,i){return(i?'L':'M')+X(i)+' '+Y(p[k])}).join('')}
+  var dots='',lab='';
+  pts.forEach(function(p,i){
+    dots+='<circle cx="'+X(i)+'" cy="'+Y(p.s)+'" r="4" fill="var(--accent2)"/><circle cx="'+X(i)+'" cy="'+Y(p.d)+'" r="4" fill="var(--mute)"/>';
+    lab+='<text x="'+X(i)+'" y="'+(H-8)+'" text-anchor="middle">'+fmt(new Date(p.t),{day:'numeric',month:'short'})+'</text>';
+  });
+  el.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" role="img" aria-label="Grafik tekanan darah">'+g+
+   '<path d="'+path('s')+'" fill="none" stroke="var(--accent2)" stroke-width="2.5"/><path d="'+path('d')+'" fill="none" stroke="var(--mute)" stroke-width="2.5"/>'+dots+lab+'</svg>'+
+   '<p class="lbl" style="margin:8px 0 0"><span style="color:var(--accent)">●</span> Sistolik &nbsp; <span>●</span> Diastolik &nbsp; Area hijau: rentang normal</p>';
+}
+function list(){
+  var ul=$('list');
+  if(!data.length){ul.innerHTML='<li class="empty" style="display:block">Belum ada catatan. Isi form di atas setelah mengukur tensi.</li>';return}
+  ul.innerHTML='';
+  data.slice().reverse().forEach(function(p){
+    var c=cls(p.s,p.d),li=document.createElement('li');
+    li.innerHTML='<span class="lbl">'+fmt(new Date(p.t),{day:'numeric',month:'short'})+'</span><span class="v">'+p.s+'/'+p.d+(p.p?' <span class="lbl" style="font-family:Manrope">· '+p.p+' bpm</span>':'')+'</span><span class="'+c[1]+'">'+c[0]+'</span>';
+    var b=document.createElement('button');b.className='x';b.type='button';b.textContent='×';b.setAttribute('aria-label','Hapus catatan');
+    b.onclick=function(){data=data.filter(function(x){return x!==p});persist();render()};
+    li.appendChild(b);ul.appendChild(li);
+  });
+}
+$('form').addEventListener('submit',function(e){
+  e.preventDefault();
+  var s=+$('sys').value,d=+$('dia').value,p=+$('pul').value||0;
+  if(!s||!d||d>=s)return alert('Periksa angka: sistolik harus lebih besar dari diastolik.');
+  data.push({t:Date.now(),s:s,d:d,p:p});persist();
+  $('sys').value=$('dia').value=$('pul').value='';render();
+});
+$('start').addEventListener('change',function(){set.start=this.value;persist();schedule()});
+$('every').addEventListener('change',function(){set.every=Math.max(1,+this.value||3);persist();schedule()});
+$('on').addEventListener('change',function(){set.on=this.checked;persist();schedule()});
+$('theme').addEventListener('click',function(){
+  var r=document.documentElement,dark=r.getAttribute('data-theme')?r.getAttribute('data-theme')==='dark':matchMedia('(prefers-color-scheme:dark)').matches;
+  var n=dark?'light':'dark';r.setAttribute('data-theme',n);save(KT,n);
+});
+var th=load(KT,null);if(th)document.documentElement.setAttribute('data-theme',th);
+data=load(KEY,[]);set=load(KS,{start:'',every:3,on:true});
+if(!set.start){set.start=iso(new Date())}
+$('start').value=set.start;$('every').value=set.every;$('atime').value=set.time||'08:00';$('on').checked=set.on!==false;
+
+/* ---- Alarm & kalender ---- */
+var snoozeUntil=0,ctx=null,ringT=null,armed=!!set.armed,ringing=false,testing=false,T0=document.title;
+function hhmm(){return $('atime').value||'08:00'}
+function astat(){
+  var el=$('astat');if(!el)return;
+  if(!armed){el.className='rs off';el.textContent='Alarm belum aktif. Tekan tombol di atas agar bisa berbunyi.';return}
+  if(set.on===false){el.className='rs off';el.textContent='Pengingat dimatikan, alarm tidak akan berbunyi.';return}
+  if(ringing){el.className='rs due';el.textContent='⏰ Alarm berbunyi sekarang.';return}
+  if(snoozeUntil>Date.now()&&window.__due){var z=new Date(snoozeUntil);el.className='rs due';el.textContent='😴 Ditunda. Alarm berbunyi lagi jam '+('0'+z.getHours()).slice(-2)+':'+('0'+z.getMinutes()).slice(-2)+'.';return}
+  if(window.__due){el.className='rs due';el.textContent='Alarm akan berbunyi hari ini jam '+hhmm()+' (halaman harus tetap terbuka).';return}
+  if(window.__left===0){el.className='rs done';el.textContent='Jadwal hari ini sudah dicatat atau dilewati.';return}
+  el.className='rs';el.textContent='Alarm TIDAK akan bunyi hari ini karena bukan hari jadwal. Alarm berikutnya '+fmt(window.__nx,{weekday:'long',day:'numeric',month:'long'})+' jam '+hhmm()+'. Untuk tes hari ini, isi Mulai tanggal dengan tanggal hari ini.';
+}
+function unlock(){try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();ctx.resume()}catch(e){}}
+if(armed)document.addEventListener('click',unlock,{once:true});
+function beep(){
+  if(!ctx)return;
+  [0,.25,.5].forEach(function(o){
+    var os=ctx.createOscillator(),g=ctx.createGain();
+    os.frequency.value=880;os.connect(g);g.connect(ctx.destination);
+    var t=ctx.currentTime+o;g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);
+    os.start(t);os.stop(t+.2);
+  });
+}
+var master=null;
+function stopTone(){if(master){try{master.disconnect()}catch(e){}master=null}}
+function ringTone(sec){
+  if(!ctx)return;stopTone();
+  master=ctx.createGain();master.connect(ctx.destination);
+  var t0=ctx.currentTime+.05;
+  for(var s=0;s<sec;s+=1.5){[[880,0],[660,.5],[880,1]].forEach(function(n){
+    var os=ctx.createOscillator(),g=ctx.createGain();
+    os.type='triangle';os.frequency.value=n[0];os.connect(g);g.connect(master);
+    var t=t0+s+n[1];g.gain.setValueAtTime(.35,t);g.gain.setValueAtTime(.35,t+.4);g.gain.exponentialRampToValueAtTime(.001,t+.47);
+    os.start(t);os.stop(t+.5);
+  })}
+}
+var snd=null;
+function playRing(){
+  unlock();
+  if(snd){try{var pr=snd.play();if(pr&&pr.catch)pr.catch(function(){ringTone(120)})}catch(e){ringTone(120)}}
+  else ringTone(120);
+}
+function prime(){if(!snd)return;try{var pr=snd.play();if(pr&&pr.then)pr.then(function(){if(!ringing&&!testing)snd.pause()}).catch(function(){})}catch(e){}}
+function idb(cb){try{var r=indexedDB.open('tensi',1);r.onupgradeneeded=function(){r.result.createObjectStore('kv')};r.onsuccess=function(){cb(r.result)}}catch(e){}}
+function idbSet(k,v){idb(function(db){try{db.transaction('kv','readwrite').objectStore('kv').put(v,k)}catch(e){}})}
+function idbDel(k){idb(function(db){try{db.transaction('kv','readwrite').objectStore('kv').delete(k)}catch(e){}})}
+function idbGet(k,cb){idb(function(db){try{var q=db.transaction('kv').objectStore('kv').get(k);q.onsuccess=function(){cb(q.result)}}catch(e){}})}
+function setSound(blob,name){snd=new Audio(URL.createObjectURL(blob));snd.loop=true;snd.preload='auto';$('sname').textContent='Suara kamu: '+name}
+idbGet('sound',function(v){if(v&&v.blob)setSound(v.blob,v.name)});
+$('sfile').addEventListener('change',function(){
+  var f=this.files&&this.files[0];if(!f)return;
+  if(f.size>15*1024*1024){this.value='';return alert('File terlalu besar. Pilih suara di bawah 15 MB.')}
+  if(snd){try{snd.pause()}catch(e){}}
+  setSound(f,f.name);idbSet('sound',{name:f.name,blob:f});prime();
+});
+$('sreset').onclick=function(){if(snd){try{snd.pause()}catch(e){}}snd=null;idbDel('sound');$('sfile').value='';$('sname').textContent='Suara bawaan'};
+document.addEventListener('visibilitychange',function(){if(ringing)playRing()});
+function showPop(){$('dtm').textContent=hhmm();var f=new Date(Date.now()+10*6e4);$('dTime').value=('0'+f.getHours()).slice(-2)+':'+('0'+f.getMinutes()).slice(-2);$('ov').hidden=false;try{$('dOk').focus()}catch(e){}}
+function startRing(){
+  if(ringing)return;ringing=true;playRing();ringT=setInterval(playRing,20000);if(ctx&&ctx.state!=='running')document.addEventListener('pointerdown',function(){playRing()},{once:true});document.title='⏰ CEK TENSI SEKARANG';snoozeUntil=0;
+  $('alarmBtn').textContent='Alarm berbunyi, ketuk untuk buka popup';showPop();
+  try{if('Notification' in window&&Notification.permission==='granted')new Notification('🩺 Waktunya cek tekanan darah',{body:'Catat hasilnya di Tensi.'})}catch(e){}
+}
+function stopRing(){
+  if(ringT)clearInterval(ringT);ringT=null;stopTone();if(snd){try{snd.pause();snd.currentTime=0}catch(e){}}ringing=false;document.title=T0;$('ov').hidden=true;
+  var b=$('alarmBtn');if(b)b.textContent=armed?'Alarm aktif, ketuk untuk matikan':'Aktifkan alarm di halaman';astat();
+}
+function act(kind){
+  var t=testing;testing=false;
+  if(t){stopRing();return}
+  set.skip=iso(new Date());persist();snoozeUntil=0;window.__due=false;stopRing();
+  if(kind==='ok'){var s=$('sys');s.scrollIntoView({behavior:'smooth',block:'center'});s.focus()}
+}
+$('dOk').onclick=function(){act('ok')};
+$('dSkip').onclick=function(){act('skip')};
+$('dSet').onclick=function(){
+  var v=$('dTime').value;if(!v)return alert('Pilih jam dulu.');
+  var p=v.split(':'),t=new Date();t.setHours(+p[0],+p[1],0,0);
+  if(testing){act('skip');return}
+  if(t.getTime()<=Date.now()+30000)return alert('Pilih jam yang belum lewat hari ini.');
+  stopRing();snoozeUntil=t.getTime();astat();
+};
+$('alarmBtn').onclick=function(){
+  if(ringing){showPop();return}
+  armed=!armed;set.armed=armed;persist();
+  if(armed){
+    try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();ctx.resume()}catch(e){}
+    try{if('Notification' in window&&Notification.permission==='default')Notification.requestPermission()}catch(e){}
+    beep();prime();
+  }
+  stopRing();
+};
+setInterval(function(){
+  schedule();
+  if(!armed||ringing||!window.__due)return;
+  var n=new Date(),hm=('0'+n.getHours()).slice(-2)+':'+('0'+n.getMinutes()).slice(-2);
+  if(snoozeUntil){if(Date.now()>=snoozeUntil)startRing();return}
+  if(hm>=hhmm())startRing();
+},5000);
+$('testBtn').onclick=function(){
+  unlock();testing=true;playRing();showPop();
+};
+$('atime').addEventListener('change',function(){set.time=this.value;persist();astat()});
+
+function makeIcs(){
+  var n=Math.max(1,+set.every||3),st=(set.start||iso(new Date())).replace(/-/g,''),tm=($('atime').value||'08:00').replace(':','')+'00';
+  var al=function(t){return ['BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Waktunya cek tekanan darah','TRIGGER;RELATED=START:'+t,'END:VALARM']};
+  return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Tensi//ID','BEGIN:VEVENT','UID:tensi-'+st+'-'+n+'@tensi','DTSTAMP:'+st+'T000000Z',
+    'DTSTART:'+st+'T'+tm,'DURATION:PT30M','RRULE:FREQ=DAILY;INTERVAL='+n,'SUMMARY:🩺 Cek tekanan darah',
+    'DESCRIPTION:Ukur dan catat tekanan darah di Tensi.']
+    .concat(al('PT0S'),al('PT10M'),al('PT20M'),['END:VEVENT','END:VCALENDAR']).join('\r\n');
+}
+$('icsBtn').onclick=async function(){
+  var ics=makeIcs(),dl=null;
+  try{if(window.claude&&claude.use)dl=await claude.use('downloads')}catch(e){}
+  if(dl){try{await dl.save({filename:'alarm-tensi.ics',data:ics})}catch(e){}return}
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));
+  a.download='alarm-tensi.ics';document.body.appendChild(a);a.click();a.remove();
+};
+
+/* ---- Ringkasan catatan untuk chatbot (hanya dipakai jika pengguna mengizinkan) ---- */
+window.__tensiContext=function(){
+  if(!data.length)return 'Pengguna belum punya catatan tekanan darah.';
+  var rows=data.slice(-10).reverse().map(function(p){
+    return fmt(new Date(p.t),{day:'numeric',month:'short',year:'numeric'})+': '+p.s+'/'+p.d+' mmHg'+(p.p?', nadi '+p.p:'')+' ('+cls(p.s,p.d)[0]+')';
+  });
+  var wk=data.filter(function(x){return Date.now()-x.t<7*864e5}),avg='';
+  if(wk.length){
+    avg='Rata-rata 7 hari terakhir: '+Math.round(wk.reduce(function(a,x){return a+x.s},0)/wk.length)+'/'+Math.round(wk.reduce(function(a,x){return a+x.d},0)/wk.length)+' mmHg dari '+wk.length+' catatan.';
+  }
+  return 'Catatan terbaru (terbaru di atas):\n'+rows.join('\n')+(avg?'\n'+avg:'')+'\nJadwal cek: setiap '+(set.every||3)+' hari.';
+};
+
+render();
+stopRing();
+})();
+</script>
+
+<script>
+/* ===== Chatbot ===== */
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var panel=$('chat'),fab=$('fab'),thread=$('cthread'),msgsBox=$('cmsgs'),input=$('cin'),sendBtn=$('csend'),share=$('cshare'),empty=$('cempty'),chipsEl=$('cchips');
+  var K_MSG='tensi:chat:v1',K_SHARE='tensi:chat:share';
+  var messages=[],busy=false,controller=null,raf=0;
+
+  var ICON_SEND='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+  var ICON_STOP='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="3"/></svg>';
+
+  var GENERIC=['Bagaimana cara mengukur tekanan darah yang benar?','Makanan apa yang baik untuk tekanan darah?','Kapan saya harus ke dokter atau IGD?'];
+  var PERSONAL='Jelaskan tren tekanan darah saya';
+
+  function lsGet(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+  function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+
+  // Markdown dirender jika library dari CDN berhasil dimuat; jika tidak, tampil sebagai teks biasa
+  var hasMd=typeof marked!=='undefined'&&typeof DOMPurify!=='undefined';
+  if(hasMd){
+    marked.setOptions({gfm:true,breaks:true});
+    DOMPurify.addHook('afterSanitizeAttributes',function(n){
+      if(n.tagName==='A'){n.setAttribute('target','_blank');n.setAttribute('rel','noopener noreferrer')}
+    });
+  }
+  function md(el,text){
+    if(hasMd){el.innerHTML=DOMPurify.sanitize(marked.parse(text))}
+    else{el.textContent=text;el.style.whiteSpace='pre-wrap'}
+  }
+
+  function nearBottom(){return msgsBox.scrollHeight-msgsBox.scrollTop-msgsBox.clientHeight<120}
+  function toBottom(){msgsBox.scrollTop=msgsBox.scrollHeight}
+
+  function addMsg(role,text){
+    var row=document.createElement('div');row.className='cm '+(role==='user'?'user':'bot');
+    var body=document.createElement('div');body.className='cb';
+    if(role==='user'){body.textContent=text}
+    else{
+      body.classList.add('cprose');
+      if(text)md(body,text);
+      else body.innerHTML='<span class="ctyping" role="status" aria-label="Sedang mengetik"><i></i><i></i><i></i></span>';
+    }
+    row.appendChild(body);thread.appendChild(row);
+    return {row:row,body:body};
+  }
+
+  function renderChips(){
+    chipsEl.innerHTML='';
+    var list=GENERIC.slice();
+    if(share.checked)list.unshift(PERSONAL);
+    list.forEach(function(t){
+      var b=document.createElement('button');b.type='button';b.className='cchip';b.textContent=t;
+      b.onclick=function(){send(t)};chipsEl.appendChild(b);
+    });
+  }
+  function updateEmpty(){empty.hidden=messages.length>0||thread.children.length>0}
+  function refresh(){sendBtn.disabled=!busy&&input.value.trim()===''}
+  function setBusy(b){busy=b;sendBtn.innerHTML=b?ICON_STOP:ICON_SEND;sendBtn.setAttribute('aria-label',b?'Hentikan jawaban':'Kirim pesan');refresh()}
+  function autosize(){input.style.height='auto';input.style.height=Math.min(input.scrollHeight,130)+'px'}
+  function persist(){lsSet(K_MSG,messages.slice(-40))}
+
+  function schedule(el,text){
+    if(raf)return;
+    raf=requestAnimationFrame(function(){
+      raf=0;var stick=nearBottom();md(el,text);if(stick)toBottom();
+    });
+  }
+
+  function showError(refs,userRow,text,message){
+    refs.body.classList.remove('cprose');refs.body.innerHTML='';
+    var box=document.createElement('div');box.className='cerr';
+    var p=document.createElement('p');p.textContent=message;
+    var b=document.createElement('button');b.type='button';b.textContent='Coba lagi';
+    b.onclick=function(){userRow.remove();refs.row.remove();send(text)};
+    box.appendChild(p);box.appendChild(b);refs.body.appendChild(box);
+  }
+
+  async function send(raw){
+    var text=(raw||'').trim();
+    if(!text||busy)return;
+    messages.push({role:'user',content:text});
+    var u=addMsg('user',text),b=addMsg('bot','');
+    updateEmpty();input.value='';autosize();toBottom();setBusy(true);
+    controller=new AbortController();
+    var reply='';
+    try{
+      var payload={messages:messages};
+      if(share.checked&&window.__tensiContext)payload.context=window.__tensiContext();
+      var res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:controller.signal});
+      if(!res.ok){
+        var msg='Terjadi kesalahan di server.';
+        try{msg=(await res.json()).detail||msg}catch(e){}
+        throw new Error(msg);
+      }
+      var reader=res.body.getReader(),dec=new TextDecoder();
+      while(true){
+        var r=await reader.read();
+        if(r.done)break;
+        reply+=dec.decode(r.value,{stream:true});
+        schedule(b.body,reply);
+      }
+      reply+=dec.decode();
+    }catch(err){
+      cancelAnimationFrame(raf);raf=0;
+      if(err.name==='AbortError'){
+        if(!reply){messages.pop();u.row.remove();b.row.remove();input.value=text;autosize()}
+      }else{
+        messages.pop();
+        showError(b,u.row,text,err instanceof TypeError?'Tidak bisa terhubung ke server. Pastikan server masih berjalan.':err.message);
+        controller=null;setBusy(false);persist();return;
+      }
+    }
+    cancelAnimationFrame(raf);raf=0;
+    if(reply){md(b.body,reply);messages.push({role:'assistant',content:reply})}
+    controller=null;setBusy(false);persist();updateEmpty();input.focus();
+  }
+
+  function openChat(open){
+    panel.hidden=!open;fab.hidden=open;fab.setAttribute('aria-expanded',String(open));
+    if(open){toBottom();setTimeout(function(){input.focus()},50)}else{fab.focus()}
+  }
+  fab.onclick=function(){openChat(true)};
+  $('cclose').onclick=function(){openChat(false)};
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&!panel.hidden&&$('ov').hidden)openChat(false);
+  });
+
+  sendBtn.onclick=function(){if(busy&&controller)controller.abort();else send(input.value)};
+  input.addEventListener('input',function(){autosize();refresh()});
+  input.addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();send(input.value)}
+  });
+  share.addEventListener('change',function(){lsSet(K_SHARE,share.checked);renderChips()});
+
+  // Mulai
+  share.checked=lsGet(K_SHARE,false)===true;
+  messages=lsGet(K_MSG,[]);
+  if(!Array.isArray(messages))messages=[];
+  messages.forEach(function(m){addMsg(m.role==='user'?'user':'bot',m.content)});
+  renderChips();updateEmpty();setBusy(false);
+})();
+</script>
+</body>
+</html>
